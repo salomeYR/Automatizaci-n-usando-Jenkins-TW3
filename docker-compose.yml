@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb-iudigital
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+
+  monolito:
+    build:
+      context: ./monolito
+      dockerfile: Dockerfile
+    container_name: iudigital-monolito
+    ports:
+      - "4000:4000"
+    environment:
+      - PORT=4000
+      - MONGO_URI=mongodb://mongodb:27017/iudigital
+    depends_on:
+      - mongodb
+
+  microservicio-proyectos:
+    build:
+      context: ./microservicio-proyectos
+      dockerfile: Dockerfile
+    container_name: iudigital-microservicio
+    ports:
+      - "4001:4001"
+    environment:
+      - PORT=4001
+      - MONGO_URI=mongodb://mongodb:27017/iudigital
+    depends_on:
+      - mongodb
+
+volumes:
+  mongodb_data:
