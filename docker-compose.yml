@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   mongodb:
@@ -13,6 +13,7 @@ services:
     build:
       context: ./monolito
       dockerfile: Dockerfile
+    image: salomeyr/iudigital-monolito:latest
     container_name: iudigital-monolito
     ports:
       - "4000:4000"
@@ -26,14 +27,25 @@ services:
     build:
       context: ./microservicio-proyectos
       dockerfile: Dockerfile
-    container_name: iudigital-microservicio
-    ports:
-      - "4001:4001"
+    image: salomeyr/iudigital-microservicio:latest
+    # container_name: iudigital-microservicio (Eliminado para permitir réplicas)
     environment:
       - PORT=4001
       - MONGO_URI=mongodb://mongodb:27017/iudigital
+    deploy:
+      replicas: 2 # Escalamiento horizontal: 2 instancias iniciales
     depends_on:
       - mongodb
+
+  nginx-lb:
+    image: nginx:latest
+    container_name: nginx-load-balancer
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    ports:
+      - "4001:80" # El puerto público 4001 ahora es gestionado por Nginx
+    depends_on:
+      - microservicio-proyectos
 
 volumes:
   mongodb_data:
