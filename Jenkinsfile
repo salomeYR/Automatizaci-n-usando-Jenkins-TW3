@@ -5,8 +5,8 @@ pipeline {
         // Credenciales de Docker Hub
         DOCKER_HUB_USER = 'salomeyr'
         DOCKER_HUB_CREDENTIALS_ID = 'docker-hub-credentials'
-        // Dirección para conectar con Docker Desktop en Windows (TCP)
-        DOCKER_HOST = 'tcp://localhost:2375'
+        // Dirección para conectar con Docker Desktop en Windows (TCP) usando IP directa
+        DOCKER_HOST = 'tcp://127.0.0.1:2375'
     }
 
     stages {
