@@ -10,7 +10,6 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                // Jenkins automáticamente hace checkout si usamos un repositorio de Git
                 echo 'Checking out source code...'
                 checkout scm
             }
@@ -19,7 +18,7 @@ pipeline {
         stage('Building Images') {
             steps {
                 echo 'Construyendo imágenes con Docker Compose...'
-                sh 'docker-compose build'
+                bat 'docker-compose build'
             }
         }
 
@@ -28,10 +27,11 @@ pipeline {
                 script {
                     echo 'Iniciando sesión en Docker Hub...'
                     withCredentials([usernamePassword(credentialsId: "${DOCKER_HUB_CREDENTIALS_ID}", passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
-                        sh "echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin"
+                        // En Windows usamos %VAR% para variables de entorno en bat
+                        bat "echo %DOCKER_PASSWORD%| docker login -u %DOCKER_USERNAME% --password-stdin"
                     }
                     echo 'Empujando imágenes a Docker Hub...'
-                    sh 'docker-compose push'
+                    bat 'docker-compose push'
                 }
             }
         }
@@ -39,8 +39,7 @@ pipeline {
         stage('Deploy (CD)') {
             steps {
                 echo 'Desplegando la aplicación...'
-                // Reiniciamos los contenedores con las nuevas imágenes
-                sh 'docker-compose up -d --remove-orphans'
+                bat 'docker-compose up -d --remove-orphans'
                 echo 'Aplicación desplegada exitosamente.'
             }
         }
@@ -49,7 +48,7 @@ pipeline {
     post {
         always {
             echo 'Limpiando sesión de Docker...'
-            sh 'docker logout'
+            bat 'docker logout'
         }
         success {
             echo '¡Pipeline finalizado con éxito!'
