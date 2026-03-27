@@ -2,9 +2,11 @@ pipeline {
     agent any
 
     environment {
-        // Credenciales de Docker Hub (deben crearse en Jenkins -> Manage Jenkins -> Credentials)
+        // Credenciales de Docker Hub
         DOCKER_HUB_USER = 'salomeyr'
         DOCKER_HUB_CREDENTIALS_ID = 'docker-hub-credentials'
+        // Dirección para conectar con Docker Desktop en Windows (TCP)
+        DOCKER_HOST = 'tcp://localhost:2375'
     }
 
     stages {
@@ -27,7 +29,6 @@ pipeline {
                 script {
                     echo 'Iniciando sesión en Docker Hub...'
                     withCredentials([usernamePassword(credentialsId: "${DOCKER_HUB_CREDENTIALS_ID}", passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
-                        // En Windows usamos %VAR% para variables de entorno en bat
                         bat "echo %DOCKER_PASSWORD%| docker login -u %DOCKER_USERNAME% --password-stdin"
                     }
                     echo 'Empujando imágenes a Docker Hub...'
