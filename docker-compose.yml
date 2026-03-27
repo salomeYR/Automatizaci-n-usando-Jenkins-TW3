@@ -13,7 +13,7 @@ services:
     build:
       context: ./monolito
       dockerfile: Dockerfile
-    image: salomeyr/iudigital-monolito:latest
+    image: shalo09/iudigital-monolito:latest
     container_name: iudigital-monolito
     ports:
       - "4000:4000"
@@ -27,7 +27,7 @@ services:
     build:
       context: ./microservicio-proyectos
       dockerfile: Dockerfile
-    image: salomeyr/iudigital-microservicio:latest
+    image: shalo09/iudigital-microservicio:latest
     # container_name: iudigital-microservicio (Eliminado para permitir réplicas)
     environment:
       - PORT=4001
